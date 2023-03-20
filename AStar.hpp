@@ -36,7 +36,7 @@ public:
         Octagonal
     };
 
-    AStar(int start_x, int start_y, int end_x, int end_y, std::vector<std::vector<TerrainPoint>> input_map)
+    AStar(int start_x, int start_y, int end_x, int end_y, std::vector<std::vector<int>> input_map)
     {
         //save a copy of the map to a instance of the class
         map = input_map;
@@ -50,7 +50,7 @@ public:
     {
     }
 
-    std::vector<Vector3> FindPath(bool allow_diagonals = false, Heuristic heuristic = AStar::Heuristic::Manhattan)
+    std::vector<std::pair<int, int>> FindPath(bool allow_diagonals = false, Heuristic heuristic = AStar::Heuristic::Manhattan)
     {
         open_list.push_back(start_node);
 
@@ -80,16 +80,16 @@ public:
             {
                 //printf("Done Time To Retrace The Path\n");
 
-                std::vector<Vector3> result;
+                std::vector<std::pair<int, int>> result;
 
                 while (current_node->parent != nullptr)
                 {
-                    result.push_back({ (float)current_node->x, map[current_node->x][current_node->y].point.y, (float)current_node->y });
+                    result.push_back({ current_node->x, current_node->y });
 
                     current_node = current_node->parent;
                 }
 
-                result.push_back({ (float)start_node->x, map[start_node->x][start_node->y].point.y, (float)start_node->y });
+                result.push_back({ start_node->x, start_node->y });
 
                 std::reverse(result.begin(), result.end());
 
@@ -115,9 +115,9 @@ public:
             {
                 int x = current_node->x + directions[i].first, y = current_node->y + directions[i].second;
 
-                if (map[x][y].blocked == 1) continue;
+                if (map[x][y] == 1) continue;
 
-                if (closed_list.find({ x, y }) != closed_list.end())
+                if (closed_list.find({x, y}) != closed_list.end())
                 {
                     continue;
                 }
@@ -153,7 +153,7 @@ public:
     }
 
 private:
-    std::vector<std::vector<TerrainPoint>> map;
+    std::vector<std::vector<int>> map;
 
     std::vector<Node*> open_list;
     std::unordered_set<std::pair<int, int>, PairHash, PairEqual> closed_list;
@@ -193,23 +193,23 @@ private:
     {
         int distance_x = std::abs(a_x - b_x);
         int distance_y = std::abs(a_y - b_y);
-
+    
         return static_cast<int>(10 * std::sqrt(std::pow(distance_x, 2) + std::pow(distance_y, 2)));
     }
-
+    
     int  OctagonalDistance(int a_x, int a_y, int b_x, int b_y)
     {
         int distance_x = std::abs(a_x - b_x);
         int distance_y = std::abs(a_y - b_y);
-
+    
         return 10 * (distance_x + distance_y) + (-6) * min(distance_x, distance_y);
     }
-
+    
     int ManhattanDistance(int a_x, int a_y, int b_x, int b_y)
     {
         int distance_x = std::abs(a_x - b_x);
         int distance_y = std::abs(a_y - b_y);
-
+    
         if (distance_x > distance_y)
         {
             return 14 * distance_y + 10 * (distance_x - distance_y);
