@@ -1,5 +1,5 @@
 # AStar
-This is my implementation of the AStar algorithm which is used as an efficent way to find the "shortest" between two points avoiding all obstacles 
+This is my implementation of the AStar algorithm which is used as an efficent way to find the "shortest" distance between two points avoiding all obstacles 
 
 ## Example Usage:
 ```
